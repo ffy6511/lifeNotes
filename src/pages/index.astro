@@ -1,0 +1,73 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Bio from '../components/Bio.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>👋 欢迎来到我的博客！</h1>
+			<p>
+				这是一个基于 <a href="https://astro.build/">Astro</a> 构建的个人博客网站。在这里，我会分享技术文章、个人思考和有趣的发现。
+			</p>
+			
+			<Bio />
+
+			<h2>最近更新</h2>
+			<ul>
+				<li>编辑 <code>src/pages/index.astro</code> 来更新此页面</li>
+				<li>在 <code>src/content/blog/</code> 添加新的博客文章</li>
+				<li>自定义博客的样式和功能</li>
+				<li>阅读 <a href="https://docs.astro.build/">Astro 文档</a> 了解更多</li>
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	main {
+		max-width: 720px;
+		margin: 0 auto;
+		padding: 3rem 1rem;
+	}
+
+	h1 {
+		font-size: 2.5rem;
+		font-weight: 700;
+		line-height: 1.2;
+		margin-bottom: 1.5rem;
+	}
+
+	h2 {
+		font-size: 1.8rem;
+		margin: 2.5rem 0 1rem;
+	}
+
+	.text-gradient {
+		background-image: var(--accent-gradient);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-size: 400%;
+		background-position: 0%;
+	}
+
+	ul {
+		padding-left: 1.5rem;
+		line-height: 1.7;
+	}
+
+	code {
+		font-size: 0.9em;
+		padding: 0.2em 0.4em;
+		border-radius: 4px;
+	}
+</style>

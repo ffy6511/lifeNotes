@@ -1,0 +1,71 @@
+---
+import { AUTHOR_NAME } from '../consts';
+
+interface Props {
+  showTitle?: boolean;
+}
+
+const { showTitle = true } = Astro.props;
+---
+
+<div class="bio">
+  {showTitle && <h2>关于作者</h2>}
+  <div class="bio-content">
+    <img src="/avatar.jpg" alt={AUTHOR_NAME} class="avatar" />
+    <div class="bio-text">
+      <p class="name">{AUTHOR_NAME}</p>
+      <p class="description">热爱技术，热爱生活。分享编程经验和个人思考。</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bio {
+    padding: 1.5rem;
+    border-radius: 8px;
+    background: rgba(var(--gray-light), 0.1);
+    margin: 2rem 0;
+  }
+
+  .bio h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .bio-content {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .bio-text {
+    flex: 1;
+  }
+
+  .name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0;
+    color: var(--accent);
+  }
+
+  .description {
+    margin: 0.5rem 0 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 720px) {
+    .bio-content {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
