@@ -51,7 +51,7 @@ body {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: rgb(var(--gray-dark));
-	font-size: 20px;
+	font-size: 16px;
 	line-height: 1.7;
 }
 
@@ -122,22 +122,27 @@ img {
 	border-radius: 8px;
 }
 code {
-	padding: 2px 5px;
+	padding: 3px 8px;
 	background-color: rgb(var(--gray-light));
-	border-radius: 2px;
+	border-radius: 5px;
 }
 pre {
-	padding: 1.5em;
+	padding: 0.5em;
 	border-radius: 8px;
 }
 pre > code {
 	all: unset;
+	display: block;           /* 块级显示 */  
+    font-family: monospace;   /* 等宽字体 */  
+    color: #333;             /* 文本颜色 */ 
+	height:auto;
+	line-height: 1.3;
 }
 blockquote {
-	border-left: 4px solid var(--accent);
-	padding: 0 0 0 20px;
+	border-left: 3px solid rgb(77, 76, 76);
+	padding: 0 0 0 10px;
 	margin: 0px;
-	font-size: 1.333em;
+	font-size: 0.9em;
 }
 hr {
 	border: none;
