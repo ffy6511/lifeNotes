@@ -43,7 +43,7 @@
 }
 body {
 	font-family: 'Atkinson', sans-serif;
-	margin: 0;
+	margin:0;
 	padding: 0;
 	text-align: left;
 	background: linear-gradient(var(--gray-gradient)) no-repeat;
@@ -102,10 +102,38 @@ a:hover {
 }
 p {
 	margin-bottom: 1em;
+	letter-spacing: 0.8px;
 }
+/* 段落之间 */
 .prose p {
-	margin-bottom: 2em;
+	margin-bottom: 1em;
 }
+
+/* 列表样式 */  
+ul, ol {  
+    padding-left: 2em;  
+    margin: 0.5em 0;     /* 减小列表的上下间距 */  
+}  
+
+ul li, ol li {  
+    margin: 0.3em 0;     /* 减小列表项之间的间距 */
+	letter-spacing: 0.8px;  
+}  
+
+/* 如果列表紧跟在段落后面，减少间距 */  
+p + ul, p + ol {  
+    margin-top: -1em;  /* 负边距可以减少段落和列表之间的空间 */  
+}  
+
+/* 嵌套列表样式 */  
+ul ul,  
+ul ol,  
+ol ul,  
+ol ol {  
+    margin: 0.2em 0;     /* 减小嵌套列表的间距 */  
+}  
+
+
 textarea {
 	width: 100%;
 	font-size: 16px;
@@ -127,7 +155,7 @@ code {
 	border-radius: 5px;
 }
 pre {
-	padding: 0.5em;
+	padding: 1em;
 	border-radius: 8px;
 }
 pre > code {
@@ -142,12 +170,16 @@ blockquote {
 	border-left: 3px solid rgb(77, 76, 76);
 	padding: 0 0 0 10px;
 	margin: 0px;
+	margin-left: 0.7em;
 	font-size: 0.9em;
 }
 hr {
 	border: none;
 	border-top: 1px solid rgb(var(--gray-light));
 }
+
+
+
 @media (max-width: 720px) {
 	body {
 		font-size: 18px;

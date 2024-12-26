@@ -1,5 +1,5 @@
 ---
-title: 'Third post'
+title: 'Data Structure'
 description: 'Lorem ipsum dolor sit amet'
 pubDate: '12 24 2024'
 heroImage: '/blog-placeholder-2.jpg'
@@ -13,7 +13,7 @@ heroImage: '/blog-placeholder-2.jpg'
   1. 堆的性质；
   2. **左偏**的性质：`node->left->Npl >= node->right->Npl`；
   3. `node->Npl = node->right->Npl + 1`；
-  4. 右路径上存在`r`个节点的左偏堆，其节点数`N`满足 $N \leq 2^r - 1$；
+  4. 右路径上存在`r`个节点的左偏堆，其节点数`N`满足 $N \leq 2^{r} - 1$；
 
 #### Operations
 > 声明结构体如下（小顶堆为例）：
