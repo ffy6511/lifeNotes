@@ -20,7 +20,7 @@ pubDate: '12 25 2024'
 3. 因此，我们给每一个`term`设置倒排索引，用来记录它们各自在整体`doc`中的分布情况.
 
 #### Term-Document Incidence Matrix
-![alt text](image.png)
+![alt text](../images/ads.png)
 > 1. 提取所有`doc`当中出现的所有`term`；
 > 2. 建立如图所示的矩形，用`1/0`表示该`term`是否在某个`doc`当中出现，形成各自的二进制向量；
 > 3. 如果要同时找出包含`A`,`B`两个`term`的`doc`索引，只需要将二者的向量作`&`运算；
@@ -32,7 +32,7 @@ pubDate: '12 25 2024'
   - 无法指示`term`在对应`doc`当中的出现的频率以及具体的位置；
 
 #### Compact Version: Inverted File Index
-![alt text](image-1.png)
+![alt text](../images/ads-1.png)
 根据前一个方法的不足，我们改进得到这样的倒排索引：  
 在现在的版本，我们在`Posting List`当中记录了每个`term`的:
 1. 总共出现的次数`time`（用于根据出现频率排序），如果要寻找多个`term`同时出现的`doc`，我们应该从`time`较小的`term`开始搜索，顺序检查其`Posting List`当中的`doc`是否被其他`term`所共有，这样就可以减少不必要的搜索；
@@ -47,7 +47,7 @@ pubDate: '12 25 2024'
 <hr>
 
 #### Index Generator
-![alt text](image-2.png)
+![alt text](../images/ads-2.png)
 **Steps:**
 1. 读取所有的文档；
 2. 然后调用`Stop Filtter`对文档进行预处理，去除停用词；
@@ -100,7 +100,7 @@ for( i = 0; i < block_cnt; i++)
 
 ### Topics
 ##### Distributed indexing
-![alt text](image-3.png)
+![alt text](../images/ads-3.png)
 - `Term-partitioned index`: each node contains some terms' **complete** posting list;
   - when read in a `term`, first find its partition, then search its posting list;
 - `Document-partitioned index`: each node contains some documents' inverted index;
@@ -119,7 +119,7 @@ for( i = 0; i < block_cnt; i++)
 3. 当辅助空间当中的数量达到一定阈值时，与`main Index`合并，并清空辅助索引；
 
 ##### Compression
-![alt text](image-4.png)
+![alt text](../images/ads-4.png)
 1. 一方面，将`dictionary`的`term`条目写在一个数组里，同时用另一个辅助数组记录各个`term`开始的`index`，从而压缩了`dictionary`的储存空间；  
 2. 另一方面，为了避免`posting list`中倒排索引的大小溢出，用相邻位置的索引差来代替原来的倒排索引，使得整体的值保持在较小的范围；
 
@@ -134,7 +134,7 @@ for( i = 0; i < block_cnt; i++)
 **query**方面：将给出的`term`按照`frequency`增序排序，仅处理`top x`的`term`
 > 出现频率较低的`term`具有更高的参考价值；
 
-![alt text](image-5.png)
+![alt text](../images/ads-5.png)
 设定一个阈值`x`,将全部的`term`排序之后，取部分的`term`进行一次搜索，然后取增量$\Delta x$再次搜索，如果两次相差不大，则完成搜索；如果相差较大，继续增大`x`.
 
 ### Measure
@@ -403,7 +403,7 @@ bool Backtracking ( int i){
   - (xi - xj)/(i-j) $\neq$ $\pm1$ 
 #### 收费站问题
 >The Turnpike Reconstruction Problem
-![alt text](image-6.png)
+![alt text](../images/ads-6.png)
 
 1. 初始化$x_0$与$X_N$
 2. 从右往左（距离从大到小）尝试放置$X_i$
@@ -466,7 +466,7 @@ f(P) = W1-W2
 - 思路：
   - α prunning： 需要极大化当前层的数据；
   - β prunning： 需要极小化当前层的数据；
-  - ![alt text](image-7.png)
+  - ![alt text](../images/ads-7.png)
 
 - 结论： when both techniques are combined.In practice, it limits the searching to only O($\sqrt{N}$)nodes, where N is the size of the full game tree.
 
@@ -493,7 +493,7 @@ f(P) = W1-W2
 
 #### 递归树法
 1. `a`影响了叶子的个数；`b`影响展开的层数；
-2. e.g. ![alt text](image-8.png)
+2. e.g. ![alt text](../images/ads-8.png)
 
 #### 主方法
 >参见笔记
@@ -606,7 +606,7 @@ void AllPairs( TwoDimArray A, TwoDimArray D, int N ){
 - 一共需要经历`N`个`stage`组装完成，每次组装消耗一定时间，且每次`stage`可以选择移动到任意一条生产线；
 - 不同`stage`以及生产线`line`之间的组装耗时不同；
 - 题目要求，给定`stage`以及`line`的耗时信息，求解最短的组装时间以及执行的`line`序列；
-![alt text](image-9.png)
+![alt text](../images/ads-9.png)
 
 ```c
 f[0][0]=0; L[0][0]=0;
@@ -676,6 +676,253 @@ void Huffman ( PriorityQueue  heap[ ],  int  C )
 > 2. 计算`cost`时，将编码字长 x 频率然后累加得到；
 > 3. 时间复杂度：O($C\log C$)
 
-e.g.![alt text](image-10.png)
+e.g.![alt text](../images/ads-10.png)
+
+## NP Complete Problems
+### Basic Concepts
+**NP问题** -- Nondeterministic polynomial-time
+1. 非确定性图灵机可以用多项式时间的算法解决 的问题称为~；
+2. 意味着用确定性图灵机可以用多项式时间的算法来**验证**;
+> 非确定性图灵机指的是：图灵机有无限的并行”纸带“，使得如果对于存在正确路径的k条路径，可以立即得到正确的答案；而确定性图灵机只能通过遍历寻找正确路径；
+> 对于不可判断类型的问题，非确定性图灵机也无法得出答案；
+
+**Decidable Problems** : 可判定问题
+> 指的是那些可以通过算法在有限时间内解决的问题;
+> 停机问题 **Halting Problem** 属于典型的不可计算问题；
+
+**NPC问题**
+1. 本身是 **NP**问题（解可以在多项式时间内验证）；
+2. NP类中的其他问题**都**可以在**多项式时间内规约**到它；
+   1. 将一个问题用多项式时间转换为另一个问题
+> 如果我们找到了解决某个NP完全问题的多项式时间算法，那么所有NP问题都可以用同样的方法在多项式时间内解决，这将意味着 ***P = NP***；
+
+并非所有的可判定问题都属于`NP`类
+> e.g. **验证一个图不存在哈密顿回路** 进行验证时必须枚举所有可能的路径，这无法用多项式时间的算法解决；
+
+
+
+
+### 经典模型
+#### Circuit-SAT
+- 地位： 是第一个被证明为 ***NPC*** 的问题
+- 内容： 给出一个布尔表达式，判断是否存在一种布尔赋值，使得表达式的输出为`1`；
+> "Input a boolean expression and ask if it has an assignment to the variables that gives the expression a value of 1."
+
+- 3-SAT ：是该问题的一个特例，要求三个变量为一组的形式
+
+
+#### 哈密顿回路 NPC
+给定一个图，判断是否存在一条路径，使得它经过图中的**每个点**恰好一次，且最后**回到起点**。
+
+#### 旅行商问题 NPC
+判定版本：给定一个完全图，判断是否存在一条路径，使得它经过图中的每个点恰好一次，且最后回到起点，且路径长度不超过`k`
+
+#### vertex cover problem （NPC）
+**相关概念**
+- 完全子图 Clique(团) ：指图中的一个顶点子集，这些顶点两两之间都有边连接；
+- 团问题： 给定一个无向图和整数K，判断图中是否存在一个包含至少K个顶点的完全子图；
+- > 属于 **NPC** 问题；
+
+
+**Vertex Cover Problem**
+- 给定一个无向图和整数K，判断能够找到一个顶点集合V'，使之满足这样的条件：
+  - V'内顶点个数不超过`k`；
+  - 无向图中所有的边都被V'的顶点覆盖，即不存在两个顶点都不在V'当中的边;
+
+**证明**：
+- 属于 NP 类：能够在O($N^3$)的时间内验证给出的解是否正确；
+- 可以由已知的NPC问题（团问题）经过多项式时间规约得到；
+
+
+
+证明问题`A`是一个 ***NP***需要经历两步：
+- `A`的解可以在多项式时间内被验证；
+- NPC问题的`B`可以在多项式时间规约下转化为`A`；
+
+
+## Approximation
+### Basic Concepts
+- 近似比： 精确解与近似算法结果的比值（与其倒数取`max`的结果），$\Pho = 1+\epsilon$；
+- **PTAS**：对于给定的 $\epsilon$，算法的时间复杂度是`n`的多项式；
+- **FPTAS**：对于`n`与$\frac{1}{\epsilon}$均为多项式时间复杂度；
+
+### Approximate Bin Packing
+**装箱问题**： 给定`N`个大小处于0~1之间的`item`，每个`bin`的大小为`1`，要求寻找最少、且能装载所有`item`的`bin`的数量；
+
+在线算法下的三种模型：
+#### Next Fit
+总是查看当前 **最后一个** `bin`：
+- 如果可以容纳`item`，则放入；
+- 否则，创建一个新的`bin`；
+
+- NF策略使用不超过`2M-1`个`bin`；
+  > `M`为最优解的 #bin;
+
+#### First Fit
+从前往后扫描所有的`bin`，选择第一个可以装载当前`item`的`bin`：
+
+- FF策略使用不超过 $\floor{1.7M}$ 个`bin`；
+
+#### Best Fit
+选择能够容纳当前 `item` 且剩余空间最小的 `bin`;
+
+- BF策略同样使用不超过 $\floor{1.7M}$ 个`bin`；
+
+<hr>
+如果限定使用在线算法，其中 **最优** 的近似解法的最坏情况的近似比也为 $\frac{5}{3}$；
+
+#### First Fit Decreasing
+将`item`按照`size`降序，然后使用`FF`或者`BF`策略；
+
+- FFD策略使用不超过 $\frac{11}{9}M + \frac{6}{9}$ 个`bin`；
+
+### Knapsack Problem
+- **问题描述**：
+  - 内容：给定容量为`M`的背包，以及`N`个item、各个物件对应的重量和利润，要求在不超过背包容量的前提下，使得背包中利润最大化；
+  - 分类：
+    - 物件可自由拆分 fraction version
+    - 每个物件只有 选或者完全不选 的状态 0-1 version
+
+#### Fraction Version
+计算profit density即单位重量的利润，然后据此对每个物件进行排序，每次取用性价比最高的物件，直到无法装入为止；
+
+#### 0-1 version
+- 不同的贪心策略：
+  - **maximum profit** :每次选取最大利润的物件；
+  - **profit density** :每次选取最高性价比的物件；
+
+记$P_{greedy} = max{P_{max},P_{pd}}$, 其近似比为 **2**；
+
+### K-center problem
+- 给定N个`site`以及整数`k`,要求选取`k`个中心，使得它们可以覆盖所有的`site`且覆盖半径尽可能小；
+- 设`S'`为未被覆盖的点的集合；
+
+**Navie greedy**: 每次选择`S'`当中距离最远的两个点，将中心设置在中间；
+
+**2-r greedy**: 从(0,$r_{max}$)当中选择`x`，作为下面步骤的输入参数
+- 从`S'`中 **随机** 选择一个作为中心`C`的一部分；
+- 删除在第一步中距离这个中心不足`2x`的`site`，更新`S'`；
+- 当`S'`中不存在顶点，即所有的点都被覆盖，停止操作；
+- 检查此时`C`中的中心个数`N`：
+  - 若`N` > `K`，说明选定的半径过小，需要增大`x`，再次求解；
+  - 若`N` < `K`，说明选定的半径过大，需要减小`x`，再次求解；
+
+```c
+Centers  Greedy-2r ( Sites S[ ], int n, int K, double r )
+{   Sites  S’[ ] = S[ ]; /* S’ is the set of the remaining sites */
+    Centers  C[ ] = ∅;
+    while ( S’[ ] != ∅ ) {
+        Select any s from S’ and add it to C;
+        Delete all s’ from S’ that are at dist(s’, s) <= 2r;
+    } /* end-while */
+    if ( |C| <= K ) return C;
+    else ERROR(No set of K centers with covering radius at most r);
+}
+```
+
+**Smarter way**: 在`2-r`策略的基础上得到，每次不是随机选择`S'`当中的点，而是选择在`C`的覆盖范围外最远的那个顶点；
+```c
+Centers  Greedy-Kcenter ( Sites S[ ], int n, int K )
+{   Centers  C[ ] = ∅;
+    Select any s from S and add it to C;
+    while ( |C| < K ) {
+        Select s from S with maximum dist(s, C);
+        Add s it to C;
+    } /* end-while */
+    return C;
+}
+```
+
+
+-  `2-r`与改进版本的近似比都是 ***2***；
+-  除非 **P=NP**，否则不存在近似比小于 **2** 的近似算法；
+  
+
+### Conclusion
+1. **Optimality**: 解的质量
+2. **Efficiency**: 解的效率
+3. **All instances**: 是否覆盖所有情况
+
+
+1+2: 对于特殊情况的 **准确而高效** 的算法；  
+1+3：对于所有情况的准确算法；  
+2+3：对于所有情况的高效算法；（牺牲了精确）
+
+
+即使 **P=NP**，也无法三个愿望一次满足.
+
+## Local Search
+先找到一个可行解，以及量化其优程度的目标函数，再在这个可行解上寻求优化，直到达到局部最优解。
+
+- ***FS***: feasible solution  
+- S': 由S经过微调得到；
+- N(S): S的邻域；
+
+
+```c
+SolutionType Gradient_descent()
+{   Start from a feasible solution S 属于 FS ;
+    MinCost = cost(S);
+    while (1) {
+        S’ = Search( N(S) ); /* find the best S’ in N(S) */
+        CurrentCost = cost(S’);
+        if ( CurrentCost < MinCost ) {
+            MinCost = CurrentCost;    S = S’;
+        }
+        else  break;
+    }
+    return S;
+}
+```
+
+
+### Vertex Cover Problem
+- Version:
+  - 判定性：我们已经在之前讨论过，即给定一个无向图和整数K，判断是否存在一个点的集合V'，使得V'的元素个数在不超过K的情况下，可以覆盖无向图中所有的边；
+  - **非判定性**：找到V'的最小规模，使得可以覆盖所有边；
+> 我们将围绕第二个版本进行讨论.
+
+
+选择一个好的起点对于得到靠近最优解的结果十分重要，如果运气不太好，选择的点可能会陷入远离最优的局部最优；   
+
+如果依旧以一定的概率选择接受邻域中的最优解（即使相比于当前最优较为差劲），那么我们具有了跳出上述“局部最优”的机会：
+![alt text](../images/ads_11.png)
+
+**Simulated Annealing** 模拟退火：
+- T越高，跳出局部最优的可能性就越高，这有助于在算法的前期避免陷入局部最优；
+- 因此，我们可以设置一系列逐渐降低的 **T**（模拟退火），使得算法最终趋近全局的最优解；
+
+### Hopfield Neural Networks
+
+- G为有权无向图，边的权值记为`w`；
+- 理想情况下：
+  - 如果w<0,表示相连的2个顶点具有相同的状态；否则具有不同的状态；
+  - 其中顶点的状态用$S_u$与$S_v$表示；
+  - 但是，对于给定的图，我们可能无法找到满足所有理想状态的顶点状态，需要引出以下概念；
+- 补充概念：记 k = $W_e * S_v * S_u$
+  - ***good***: 对于 **边** 来说，如果满足 k < 0, 那么这条是好边；
+  - ***satisfied***: 对于 **点** 来说， 如果它所包含的好边的**权值**要大于坏边的权值，那么为可满足
+     > 即 k 的求和不大于0；
+  - ***stable***: 对于**configuration**来说，如果所有的顶点均可满足，那么为稳定；
+
+据此，我们可以完整地描述问题的理想输出：
+<center> find a stable S for network G </center>
+
+
+```c
+ConfigType State_flipping()
+{
+    Start from an arbitrary configuration S;
+    while ( ! IsStable(S) ) {
+        u = GetUnsatisfied(S);
+        su = - su;
+    }
+    return S;
+}
+```
+> 1. 从任意的**配置**开始，
+
+
+
 
 

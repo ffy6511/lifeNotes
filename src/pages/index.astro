@@ -3,6 +3,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Bio from '../components/Bio.astro';
+import Greeting from '../components/Greeting';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
 
@@ -18,7 +19,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 			<p>
 				这是一个基于 <a href="https://astro.build/">Astro</a> 构建的个人博客网站。在这里，我会分享技术文章、个人思考和有趣的发现。
 			</p>
-			
+			<Greeting client:load messages={["Hej", "Hallo", "Hola", "Habari"]} />
 			<Bio />
 
 			<h2>最近更新</h2>

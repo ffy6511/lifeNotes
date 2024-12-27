@@ -1,10 +1,12 @@
-{  
-  "extends": "astro/tsconfigs/base",  
-  "compilerOptions": {  
-    "strictNullChecks": true  
-  },  
-  "include": [  
-    "src",  
-    "src/@types"  
-  ]  
+{
+  "extends": "astro/tsconfigs/base",
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  },
+  "include": [
+    "src",
+    "src/@types"
+  ]
 }
