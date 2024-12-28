@@ -28,4 +28,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: dist
+          publish_branch: main  # 部署到 main 分支
+          publish_dir: dist    # 指定构建输出目录
+          keep_files: true     # 保留 main 分支上的其他文件
