@@ -993,8 +993,322 @@ local search的组成要素：
  > 每次搜索到较优的就更新，而不是遍历所有的邻域
 
 
+## Randomized Algorithms
+- 随机化：输入可能表现为随机化，算法的处理思想也可能是随机化的. 本章我们讨论的是后者.
 
 
+- 为什么需要随机化：
+  - 利用高效的随机化算法，以 **很高的概率** 获得正确答案.
+
+### The Hiring Problem
+**问题描述**
+- 有$N$个面试者可供聘用；
+- 面试和雇佣分别需要消耗一定的时间$C_i与C_h$,且后者是主要时间消耗；
+- 我们讨论的是面试和雇佣需要的时间总和，而非算法的运行时间；
+
+#### Naive Approach
+```c
+int Hiring ( EventType C[ ], int N )
+{   /* candidate 0 is a least-qualified dummy candidate */
+    int Best = 0;
+    int BestQ = the quality of candidate 0;
+    for ( i=1; i<=N; i++ ) {
+        Qi = interview( i ); /* Ci */
+        if ( Qi > BestQ ) {
+            BestQ = Qi;
+            Best = i;
+            hire( i );  /* Ch */
+        }
+    }
+    return Best;
+}
+```
+> Worst case: 面试者以质量递增的次序出现时，将会花费$O(NC_h)$的时间  
+> 为了避免上述情况的发生，我们考虑面试者的质量是random的.
+
+#### Randomized Approach
+如果面试者的质量是 **random**:
+- 对于前`i`个面试者，每个人被雇佣的概率是相等的，均为$\frac{1}{i}$;
+- N个面试者对应的总hire数量：$\sum_{i=1}^N \frac{{1}}{i} = \ln N$
+- 由此，整体的时间消耗为：$O(C_h\cdot\ln N + N\cdot C_i)$
+
+```c
+int RandomizedHiring ( EventType C[ ], int N )
+{   /* candidate 0 is a least-qualified dummy candidate */
+    int Best = 0;
+    int BestQ = the quality of candidate 0;
+
+    randomly permute the list of candidates; //我们需要在此处随机化输入
+
+    for ( i=1; i<=N; i++ ) {
+        Qi = interview( i ); /* Ci */
+        if ( Qi > BestQ ) {
+            BestQ = Qi;
+            Best = i;
+            hire( i );  /* Ch */
+        }
+    }
+}
+```
 
 
+接下来我们需要考虑如何 **随机化** 排列面试者:
+>一种可行的排列方式：
+```c
+void PermuteBySorting ( ElemType A[ ], int N )
+{
+    for ( i=1; i<=N; i++ )
+        A[i].P = 1 + rand()%(N^3); 
+        /* makes it more likely that all priorities are unique */
+    Sort A, using P as the sort keys;
+}
+```
+> 1. A是待排序的面试者；
+> 2. 我们通过取用1~$N^3$之间的值，赋值给A上元素的属性P；
+> 3. 最后利用P来对A进行排序，达到随机的效果.
 
+**claim**: 上述的算法能够以很高的概率获得随机的序列.
+
+<hr>
+
+在之前我们讨论的随机化算法中，对于输入的随机化处理要求输入是 **offline** 的，这样才能够调用`PermuteBySorting`.  
+在下面的讨论中，我们需要处理`online`的输入，即输入的顺序是 **不确定的** 的.
+
+#### Online Approach
+> 只hire`N`个人当中的1个.
+```c
+int OnlineHiring ( EventType C[ ], int N, int k)
+{
+    int Best = N; //先假设全局最优是最后一个面试者
+    int BestQ = - infinity ; //BestQ是前k个最优，初始化为负无穷
+    for ( i=1; i<=k; i++ ) {
+        Qi = interview( i );
+        if ( Qi > BestQ )   BestQ = Qi;
+    }
+    for ( i=k+1; i<=N; i++ ) {
+        Qi = interview( i );
+        if ( Qi > BestQ ) {
+            Best = i;
+            break;
+        }
+    }
+    return Best;
+}
+```
+算法的整体思想：
+- 先假设全局最优的Best是最后一个面试者；
+- 在前k个面试者中找到局部最优BeseQ;
+- 在K+1~N-1中比较当前面试者与BestQ，如果找到了更优的面试者，将Best设置为i,立即 ***break***;
+- 返回 Best.
+> 如果在第二次搜索当中没有找到比局部更优的，并不返回局部最优，而是一开始的 ***N***,因为循环中不涉及对Best的更新!
+
+<br>
+
+对于给定的N，如何选择k使得我们可以正确选择到全局最优？
+
+
+***claim***: for integer K, 
+$
+k_{best} = \lfloor \frac{N}{e} \rfloor
+$
+此时对应的概率为$\frac{1}{e}$.
+
+### QuickSort
+**相关概念**：
+- Central splitter： the pivot that divides the set so that each side contains at least n/4
+- Modified Quicksort： always select a central splitter before recursions
+
+
+***claim***: The expected number of iterations needed until we find a central splitter is at most 2.
+> 找到理想pivot的期望次数为 **2**.
+- 推导：
+  - 假设我们经过k次尝试找到了理想分割点，每次尝试都是独立的，概率为$\frac{1}{2}$;
+  - 设x为需要的寻找次数，那么x的期望为E(x);
+  - 根据期望的定义，E(x) = $\sum_{k=1}^\infty \frac{k}{2^k}$ = 2;
+
+
+$O(N\log N)$ 是上述算法的平均时间复杂度，而不是worst case.
+> Type j.
+
+<hr>
+
+## Parallel Algorithms
+
+### summattion problem
+- **input**: A(1)~A(n);
+- **output**: $sum_{i=1}^n A_i$;  
+
+策略：采用二叉平衡树 binary balanced tree,自底向上求解$B-i$，root就是所求的答案.
+```c
+for P_i ,  1 <= i <= n  pardo //初始化赋值底层节点
+   B(0, i) := A( i )
+//遍历高度(此处的h从底部向上递增)
+for h = 1 to log n 
+    // n/2^h是第h层的节点数
+    for Pi, 1 <= i <= n/{2^h}  pardo
+        B(h, i) := B(h-1, 2i-1) + B(h-1, 2i)
+for i = 1 pardo
+   output  B(log n, 1) //root
+```
+
+### Prefix-Sums
+- **input**: A(1)~A(n);
+- **output**: $\sum_{i=1}^1 A_i , \sum_{i=1}^2 A_i , \dots  \sum_{i=1}^n A_i$;
+
+这个问题的输入输出与上一个问题十分相似，我们在上述算法的基础上完成.
+
+策略：
+- 先用$\log N$的时间完成上一步的算法，自底向上获得所有的B;
+- 然后从上往下获得每一个节点的属性 **C(h,i)**：
+  - h依旧遵循B的高度，即自底向上递增的高度；
+  - i表示第h层的第i个节点；
+我们希望从上往下构建完成的时候，叶子层的各个节点包含了前缀和.
+
+
+具体的赋值方法参见prodrafts.在此用语言抽象：
+- 每层的第一个节点，C = B ;
+- 每层偶数个节点，用父节点的C赋值；
+- 其余节点：父节点的C + 当前节点的B.
+
+```c
+//自底向上构造B
+for Pi , 1 <= i <= n pardo
+  B(0, i) := A(i)
+for h = 1 to log n
+  for i , 1 <= i <= n/2^h pardo
+    B(h, i) := B(h - 1, 2i - 1) + B(h - 1, 2i)
+
+//自定向下构造C
+for h = log n to 0
+  for i even, 1 <= i <= n/2^h pardo
+    C(h, i) := C(h + 1, i/2)
+  for i = 1 pardo
+    C(h, 1) := B(h, 1)
+  for i odd, 3 <= i <= n/2^h pardo
+    C(h, i) := C(h + 1, (i - 1)/2) + B(h, i)
+for Pi , 1 <= i <= n pardo
+  Output C(0, i)
+```
+T(n) = O($\log n$); W(n) = O(n).
+
+### Merge
+- **input**: A(1)~A(n), B(1)~B(m) 且均为递增序列;
+- **output**: C(1)~C(n+m), sorted;
+> 为了方便讨论，假设m,n相等;
+
+
+**claim**:
+Given a solution to the ranking problem, the merging problem can be solved in O(1) time and O(n+m) work.
+```c
+for Pi , 1 <= i <= n  pardo
+    C(i + RANK(i, B)) := A(i)
+for Pi , 1 <= i <= n  pardo
+    C(i + RANK(i, A)) := B(i)
+```
+
+**思路**：将merge转化为rank.
+- BST方法：
+```c
+for Pi , 1 <= i <= n  pardo
+    RANK(i, B) := BS(A(i), B)
+    RANK(i, A) := BS(B(i), A)
+```
+> T(n) = O($\log n$), W(n) = O($n\log n$);
+
+
+- 串行方法:
+```c
+i = j = 0; 
+while ( i <= n || j <= m ) {
+    if ( A(i+1) < B(j+1) )
+        RANK(++i, B) = j;
+    else RANK(++j, A) = i;
+}
+```
+> T(n) = W(n) = O(n+m);
+
+
+但是上述的两种方法依旧不是我们预期的，我们将通过并行的方法来优化.
+
+#### Parallel Ranking
+- **p**：分区的个数
+- 思路：
+  - 令 p = $\frac{n}{\log n}$，这是分区的个数；
+  - 对于p个分区，共有2p个，且size均为$\log n$；
+  - 此时我们调用处理器并行地用朴素的串行算法计算（T与W均为size）；
+  - 最终结果: **T = O(log n), W = O(n)**.
+
+### Maximum Finding
+- 朴素方法：在summation problem的基础上用`max`来代替`+`
+  -  T = log n, W = n;
+
+#### Compare all pairs
+```c
+for Pi , 1 <= i <= n  pardo
+    B(i) := 0
+for i and j, 1 <= i, j <= n  pardo
+    if ( (A(i) < A(j)) || ((A(i) = A(j)) && (i < j)) )
+            B(i) = 1
+    else B(j) = 1
+for Pi , 1 <= i <= n  pardo
+    if B(i) == 0
+       A(i) is a maximum in A
+```
+> 1. 初始化辅助数组B为0；
+> 2. 用$O(N^2)$的处理器同时比较，将较小的那个B赋值为1;
+> 3. 调用N个处理器查找B，输出B为0的那个位置，就是最大值.
+> 4. 由于同时读写，处理conflict的策略为：**arbitrary**.
+
+T = 1, W = $O(N^2)$.
+
+
+#### Doubly-logarithmic Paradigm
+整体思路： 
+1. 将输入设置为不同的分区，在各自分区内调用处理器采用朴素的方法T=W=size找出最大值，
+2. 然后将不同的分区采用compare all pairs的方法合并，找到最大值.
+
+分区尺寸为$\sqrt{n}$:
+- T(n) = $O(\log{\log n})$;
+- W(n) = $O(n\cdot\log{\log n})$;
+
+分区尺寸为h = $\log{\log n}$:
+- T(n) = $O(\log{\log n})$;
+- W(n) = O(n);
+
+#### Random Sampling
+用O(n)的processors可以获得：
+- T = O(1);
+- W = O(n);
+> 推导详见prodrafts.
+
+## External Sorting
+### Overview
+- 内存限制了使用快排等内部排序的size；
+
+***steps:***
+1. **Read in**: for k-way merge,将内存划分为2k+2个buffer, 采用2k个input buffer,2个output buffer；
+   1. output buffer当中，其中一个用来存储内存产生的数据，另一个用于向disk写入的缓冲区.
+2. **Initial Sort**: 将连续的序列第一次排序，我们期望获得更长的 **run**;
+   1. 采用 **replacement selection** 的方法；
+3. **Merge**: 第一次排序后，我们需要对不同的run进行合并，各个tape的run的长度会影响最终的passes(run合并的循环次数)
+   1. 采用**polyphase merge**的方式，即尽可能构造斐波那契队列的run分配；
+   2. 对于k-tape,采用的时k-fibonacci序列；
+4. **Minimize merge time**: 对于已经构造完毕的队列，我们可以通过 **哈夫曼编码** 的结构来减小成本；
+   1. 即优先merge较短的run，这样可以减少需要merge的次数；
+
+### 补充
+- k-way merge：
+  - number of passes = $1+\lceil \log_k{(N/M)} \rceil$;
+  - 需要 **2k** 个tape;
+  - k并非越大越好; 
+- polyphase merge：
+  - k-way merge只需要**k+1**个tape；
+  - 如果N不是斐波那契数，add dummy runs -> get to the nearsest Fibonacci number;
+- replacement selection：
+  - 如果新加入的元素比刚刚提取的最小元素要大，保留其作用；
+  - 否则，将其“失效”，或者说存放在另一个小顶堆里等待下一轮的run；
+  - 如此得到的run的长度，其均值为2M,M是内存（原来的run的大小）；
+- 哈夫曼编码：
+  - 每次取用最小的2个run合并（较小的放在左子树），然后放回队列；
+  - 如此循环直至队列中不存在2个run；
+  - 根据高度 x run可以计算总时间.
