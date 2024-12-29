@@ -12,6 +12,77 @@ pubDate: '12 25 2024'
 
 
 # 整理
+## AVL
+基本概念：
+1. 通过高度维持平衡，不一定要求左偏；
+### 旋转
+- 二叉树旋转的前后，中序遍历的结果保持不变；
+- 注意，对于双旋的命名以第二次的方向为依据
+```c
+static Position DoubleRotateWithLeft(Position K3) {
+    // 先右旋 touble finder 的左孩子
+    K3->Left = SingleRotateWithRight(K3->Left);
+
+    // 再左旋 trouble finder 自身
+    return K3 = SingleRotateWithLeft(K3);
+}
+```
+> 此处实际上是针对RL的情形，称为DoubleRotateWithLeft.
+
+### Splay tree
+基本概念：
+1. 继承了旋转的操作，且每次操作后一定旋转该节点到 **根节点**；
+2. 但是不再维护节点的平衡因子；
+3. **zig=zag**的情况与AVL的双旋完全相同； **zig-zig**时，将该直线旋转改变了方向：先让中间节点旋转，然后让根节点向相同的方向旋转；
+
+### 摊还分析
+- 通常令势能函数的初值为 **0**；
+
+
+## RBT
+- 叶子节点指的是 **NIL**空节点；
+- 在RBT当中，实际存在的节点称为内点 **internal node**, **NIL**称为外点；
+- 从每个节点出发，到它后代的NIL节点的 **不同** 简单路径包含 **相同** 的黑色节点数；
+- 与AVL操作的效率比较：
+  - **Insertion**: 均为 <= 2;
+  - **Deletion**: AVL为O($\log N$); RBT为 <= **3**;
+
+## BPlus Tree
+### M-阶的节点性质
+- **root**: 没有孩子(作为leaf) / 具有 $[2,M]$ 个孩子；
+- 除了root以外的 **Internal node**具有的孩子数 ： $ \lceil \frac{M}{2} \rceil$ ~ M；    
+  - 因此，当整体为 $\lceil \frac{M}{2} \rceil$ 叉树时，具有最高高度，所以对于M阶B+树来说，高度为$O(\log_{\lceil \frac{M}{2} \rceil} N)$；
+
+
+**claim**: 查找时间为 O(logN)；阶数M不是越大也好，最适合的是3/4；
+
+## Leftist Heap
+- **Npl**: 到外节点的最短路径长度；
+  - 外节点：子节点数目少于2的节点；
+- **左偏**： 任意一个节点的左子树的NPL不小于右子树的NPL；
+- 右路径上有`r`个节点的左偏堆，至少具有$2^r -1$个节点；
+
+### Skew Heap
+- 是左偏堆的简单形式，不再维护NPL字段，而是每次都交换左右子树；
+- 向空的斜堆中依次插入1 ~ $2^k-1$个元素之后，得到一棵 **满二叉树**；
+
+<br>
+
+### 堆操作的总结
+| 操作        | 二叉堆        | 左偏堆      | 斜堆        | 二项堆      | 斐波那契堆  |  
+|-------------|---------------|--------------|-------------|--------------|--------------|  
+| Insert      | O(log n)      | O(log n)     | O(log n)    | O(1)         | O(1)         |  
+| Merge       | O(n)          | O(log n)     | O(log n)    | O(log n)     | O(1)         |  
+| DeleteMin   | O(log n)      | O(log n)     | O(log n)    | O(log n)     | O(log n)     |  
+| Delete      | O(log n)      | O(log n)     |     | O(log n)     | O(log n)     |  
+| DecreaseKey | O(log n)      | O(log n)     |    | O(log n)     | O(1)         |
+> 二项队列的insert为O(1);  
+> 斐波那契堆的merge, insert, decreasekey为O(1);  
+> 左偏堆的操作均为$\log n$; 
+
+
+<br>
+
 ## Inverted File Index
 ### Concepts
 - 为什么我们需要倒排索引？
@@ -340,14 +411,16 @@ Binomial_queue* DeleteMin(Binomial_queue* H){
 
 
 ### Analysis
-**claim**： A binomial queue of N elements can be built by Nsuccessive insertions in **O(N)** time.
+**claim**：   
+-  A binomial queue of N elements can be built by Nsuccessive insertions in **O(N)** time.
+
 <br>
 
 聚合法证明：
   - 每次插入需要构建新的`node` --- cost = 1;
   - 每隔4,8,16...次插入，分别需要1,2,3...进位；
   - 由于插入N次，将上述的进位代价平均到每次的插入当中，得到：
-<center>N($\frac{1}{4}+\frac{1}{8}*2+\frac{1}{16}*3+\cdots+\frac{1}{2^{k+1}}*k$) = N , when k->$\infty$ </center>
+<center>N($\frac{1}{4}+\frac{1}{8}\cdot2+\frac{1}{16}\cdot3+\cdots+\frac{1}{2^{k+1}}\cdot k$) = N , when k->$\infty$ </center>
 
 > 因此，整体的时间复杂度为 O(N), 除以N得到单次插入的摊还复杂度：**O(1)**.
 
@@ -456,6 +529,8 @@ bool Reconstruct ( DistType X[ ], DistSet D, int N, int left, int right )
 
 <br>
 
+**claim**:
+- 如果将距离集存储在一棵 AVL 树中，且没有回溯发生，那么该算法的时间复杂度为$O(N^2\cdot\log N)$;
 #### Min_max strategy
 定义效用函数： “goodness”
 f(P) = W1-W2
@@ -487,9 +562,30 @@ f(P) = W1-W2
   - 每次将平面分为两个区域，分别寻找子区间内最近的距离，记二者当中的较小值为`min`;
   - 接下来需要在距离中线`min`范围内查询是否存在距离小于`min`的点；
 
+```c
+// points are in the strip
+// and sorted by y coordinates
+for (i = 0; i < NumPointsInStrip; i++)
+    for (j = i + 1; j < NumPointsInStrip; j++)
+        if (Dist_y(Pi, Pj) > delta)
+            break;
+        else if (Dist(Pi, Pj) < delta)
+            delta = Dist(Pi, Pj);
+```
+> 通过y轴约束距离，最多查找一个点的7个邻域；
+
+
+
+
 ### 复杂度分析
 #### 代换法
 >大胆猜测，小心验证.
+
+如果出现类似于$T(\sqrt{N})$的形式：
+- 令$m = \log n$,则$T(\sqrt{N})$ = $T(2^{\frac{m}{2})$; $T(n) = T(2^m)$;
+- 再令$S(m)= T(2^m)$, $S(\frac{m}{2} = T(2^\frac{m}{2})$；
+- 由此转化为了一般形式.
+
 
 #### 递归树法
 1. `a`影响了叶子的个数；`b`影响展开的层数；
@@ -806,6 +902,8 @@ e.g.![alt text](../images/ads-10.png)
 - 检查此时`C`中的中心个数`N`：
   - 若`N` > `K`，说明选定的半径过小，需要增大`x`，再次求解；
   - 若`N` < `K`，说明选定的半径过大，需要减小`x`，再次求解；
+> 改变`r`时都是通过二分的策略实现！
+
 
 ```c
 Centers  Greedy-2r ( Sites S[ ], int n, int K, double r )
