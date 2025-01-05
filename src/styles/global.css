@@ -216,18 +216,39 @@ hr {
     position: fixed;
     right: 1rem;
     top: 2rem;
-    width: 200px;
+    width: 240px;
     max-height: 80vh;
     overflow-y: auto;
     background: rgba(255, 255, 255, 0.95);
     padding: 1.5rem;
-    border-left: 2px solid var(--accent);
+    border-left: 1px solid rgb(217, 216, 216);
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     transition: all 0.3s ease;
     transform: translateX(calc(100% - 50px));
+}
+
+/* 层级缩进样式 */
+.toc li.level-1 {
+    padding-left: 1px;
+}
+
+.toc li.level-2 {
+    padding-left: 1px;
+}
+.toc li.level-3 {
+    padding-left: 4px;
+}
+.toc li.level-4 {
+    padding-left: 6px;
+}
+.toc li.level-5 {
+    padding-left: 8px;
+}
+.toc li.level-6 {
+    padding-left: 10px;
 }
 
 .toc.expanded {
@@ -285,7 +306,7 @@ hr {
 
 .dark .toc {
     background: rgba(38, 44, 60, 0.95);
-    border-left-color: var(--accent-dark);
+    border-left-color: rgb(64, 61, 61);
 }
 
 .toc:hover {
@@ -306,7 +327,6 @@ hr {
 }
 
 .toc li::before {
-    content: '';
     position: absolute;
     left: 0;
     top: 50%;
@@ -373,4 +393,41 @@ hr {
 
 .dark .toc::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
+}
+
+/* 导航栏高亮样式 */
+/* 滚动高亮样式 */
+.toc a.active {
+    color: var(--accent) !important;
+    font-weight: 700;
+    transform: translateX(8px);
+    background: rgba(var(--accent), 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-left: -8px;
+}
+
+.toc a.active::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 80%;
+    background: var(--accent);
+    border-radius: 2px;
+    opacity: 1;
+    transition: all 0.2s ease;
+}
+
+/* 区分hover和active状态 */
+.toc a:hover {
+    background: rgba(var(--accent), 0.05);
+    transform: translateX(4px);
+}
+
+.toc a.active:hover {
+    background: rgba(var(--accent), 0.15);
+    transform: translateX(8px);
 }
