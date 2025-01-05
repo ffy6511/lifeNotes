@@ -210,3 +210,167 @@ hr {
 	clip-path: inset(50%);
 	white-space: nowrap;
 }
+
+/* Table of Contents Styles */
+.toc {
+    position: fixed;
+    right: 1rem;
+    top: 2rem;
+    width: 200px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1.5rem;
+    border-left: 2px solid var(--accent);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+    transform: translateX(calc(100% - 50px));
+}
+
+.toc.expanded {
+    transform: translateX(0);
+}
+
+.toggle-toc-btn {
+    position: fixed;
+    right: 1rem;
+    top: 2rem;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+.toggle-toc-btn:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.toggle-toc-btn::before {
+    content: '≡';
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--accent);
+    transition: all 0.3s ease;
+}
+
+.toggle-toc-btn:hover::before {
+    color: white;
+}
+
+.dark .toggle-toc-btn {
+    background: rgba(38, 44, 60, 0.95);
+    border-color: var(--accent-dark);
+}
+
+.dark .toggle-toc-btn::before {
+    color: var(--accent-dark);
+}
+
+.dark .toggle-toc-btn:hover {
+    background: var(--accent-dark);
+}
+
+.dark .toc {
+    background: rgba(38, 44, 60, 0.95);
+    border-left-color: var(--accent-dark);
+}
+
+.toc:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.toc li {
+    margin-bottom: 0.75rem;
+    padding-left: 1rem;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.toc li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.toc li:hover::before {
+    opacity: 1;
+}
+
+#toc-list a {
+    color: #4a5568 !important;
+    text-decoration: none;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    transition: all 0.2s ease;
+    display: block;
+    padding: 0.25rem 0;
+}
+
+.dark #toc-list a {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+#toc-list a:hover {
+    color: var(--accent) !important;
+    transform: translateX(4px);
+}
+
+.toc li.active > a {
+    color: var(--accent) !important;
+    font-weight: 600;
+}
+
+.toc li.active::before {
+    opacity: 1;
+    background: var(--accent);
+}
+
+/* Scrollbar styling */
+.toc::-webkit-scrollbar {
+    width: 6px;
+}
+
+.toc::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+}
+
+.toc::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.dark .toc::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dark .toc::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+}

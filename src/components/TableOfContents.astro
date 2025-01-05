@@ -1,72 +1,73 @@
+---
+interface Props {
+  headings: { slug: string; text: string }[];
+}
+---
+
+<button class="toggle-toc-btn">≡</button>
+
 <nav class="toc">
-    <ul id="toc-list">
-    </ul>
+  <ul id="toc-list"></ul>
 </nav>
 
-<script >
-    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    const tocList = document.getElementById('toc-list');
+<script>
+  let isExpanded = false;
 
+  const toggleToc = () => {
+    const toc = document.querySelector('.toc');
+    const btn = document.querySelector('.toggle-toc-btn');
+    
+    if (!toc || !btn) return;
+    
+    isExpanded = !isExpanded;
+    
+    if (isExpanded) {
+      toc.classList.add('expanded');
+      btn.textContent = '×';
+    } else {
+      toc.classList.remove('expanded');
+      btn.textContent = '≡';
+    }
+  };
+
+  // 绑定按钮点击事件
+  const toggleBtn = document.querySelector('.toggle-toc-btn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', toggleToc);
+  }
+
+  const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+  const tocList = document.getElementById('toc-list');
+
+  if (tocList) {
     headings.forEach((heading) => {
-        const level = parseInt(heading.tagName.charAt(1));
-        const text = heading.textContent;
-        const id = heading.id || (text!).toLowerCase().replace(/\s+/g, '-');
-        
-        heading.id = id;
-        
-        const li = document.createElement('li');
-        li.classList.add(`level-${level}`);
-        
-        const a = document.createElement('a');
-        a.href = `#${id}`;
-        a.textContent = text;
-        
-        li.appendChild(a);
-        (tocList!).appendChild(li);
+      const level = parseInt(heading.tagName.charAt(1));
+      const text = heading.textContent || '';
+      const id = heading.id || text.toLowerCase().replace(/\s+/g, '-');
+      
+      heading.id = id;
+      
+      const li = document.createElement('li');
+      li.classList.add(`level-${level}`);
+      
+      const a = document.createElement('a');
+      a.href = `#${id}`;
+      a.textContent = text;
+      
+      li.appendChild(a);
+      tocList.appendChild(li);
     });
+
+    // 自动收起导航栏
+    document.addEventListener('click', (e) => {
+      const toc = document.querySelector('.toc');
+      const btn = document.querySelector('.toggle-toc-btn');
+      
+      if (toc && btn && e.target instanceof Node) {
+        if (!toc.contains(e.target) && !btn.contains(e.target) && isExpanded) {
+          toggleToc();
+        }
+      }
+    });
+  }
 </script>
-
-<style>
-    .toc {
-        position: fixed;
-
-        right: 0em;
-        top: 2rem;
-        width: 150px;
-        max-height: 80vh;
-        overflow-y: auto;
-        background: white;
-        padding: 1.5rem;
-        border-left: 1px solid #eee;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .toc ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .toc li {
-        margin-bottom: 0.5rem;
-        padding-left: 1rem;
-    }
-
-    #toc-list a {
-        color: #4a5568 !important;
-        text-decoration: none;
-        font-size: 0.95rem;
-        line-height: 1.4;
-        transition: color 0.2s;
-    }
-
-    .toc a:hover {
-        color: #2b6cb0;
-    }
-
-    .toc li.active > a {
-        color: #2b6cb0;
-        font-weight: 600;
-    }
-</style>

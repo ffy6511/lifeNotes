@@ -7,6 +7,116 @@ pubDate: '12 25 2024'
 ## 回顾
 - 二项队列的删除；
 - 分治--主方法
+- k-阶的斐波那契数
+
+
+
+## 做题摘录
+
+外排的缺点: It involves the use of multiple temporary files which can be time-consuming to manage.
+
+限制距离满足三角不等式时，旅行商问题存在如下 2-近似算法:首先求出图 G 的最小生成树 T，然后在 T 上按深度优先搜索(先序遍历)的顶点遍历顺序得到一条哈密顿回路，其权重不超过最小生成树的权重的两倍。
+> general不存在近似算法
+
+
+- concepts of trees:
+  - banary tree;
+  - perfect 每层都被完全填充；
+  - complete 除了最后一层都是完全填充，且最后一层为左对齐
+  - full 指的是每一个节点满足要么具有2个子节点，要么不具有子节点
+
+
+
+将N个元素插入到原始为空的二项队列当中，worst case消耗的时间为O(N).
+> 注意此处指的是连续的N次插入的总时间，因此满足摊还分析下插入为O(1)的性质.
+
+- T(n) = T($\sqrt{n}$)... 的递归深度是 O(loglogn).
+
+
+The Metropolis Algorithm： 模拟退火
+
+big-improvement-flip
+
+Elements of DP:
+- Optimal substructure
+- Overlapping sub-problems
+
+Elements of Greedy:
+- there is always an optimal solution to the original problem that makes the greedy choice,
+- optimal substructure 
+- works only if the local optimum is equal to the global optimum
+- make a choice before solving the remaining sub-problem
+
+
+
+
+**Claim**: 左偏堆H1与H2经过merge得到H3,记三者的NPL分别为a,b,c则：  
+c $\geq$ min(a,b) + 1   ,  c $\leq$ max(a,b) + 1;
+
+**Claim**:对于bin packing问题，如果限定使用在线算法，其中 **最优** 的近似解法的最坏情况的近似比也为 $\frac{5}{3}$；
+
+**Claim**: 对于收费站重建问题，如果将距离集存储在一棵 AVL 树中，且没有回溯发生，那么该算法的时间复杂度为$O(N^2\cdot\log N)$;
+
+**Notice**: k-way的polyphase merge，对应的k-阶斐波纳契数：  
+$F_N^{(k)} = F_{N-1}^{(k)} + F_{N-2}^{(k)} + \dots F_{N-k}^{(k)}$, 其中 $F_N^{(k)} = 0$ for $0\leq N \leq k-2$ 且 $F_{k-1}^{(k)} = 1$  
+> 注意，此处的$F_0$不是第一项，而是第0项（不存在于最终的序列当中）；  
+
+
+具有堆的性质：
+- 二项堆当中的**二项树**
+- 左偏堆、斜堆  
+
+具有BST的性质：
+- AVL 、Splay
+- BPlus
+- RBT
+
+
+**主方法**的应用：
+```c
+strange(a1, a2, ..., an):
+1. if n ≤ 2022 then return
+2. strange(a1, ..., a[n/2]) 
+3. strange(a[n/4 + 1], ..., a[3n/4]) 
+4. for i = 1 to n: 
+5.   for j = 1 to √n:
+6.     print(ai + aj) 
+7. strange(a[n/4 + 1], ..., a[3n/4]) 
+8. strange(a[n/2 + 1], ..., an)
+```
+由代码可得： T(n) = 4T(2/n) + O($n^{1.5}$),根据主方法的form3可得 T(N)=$O(N^{\log_b a}) = O(N^2)$.
+
+多项式规约通常是单向的，因为A可以规约到B意味着 A $\leq_p B$，因此反向不一定成立.
+
+
+多叉的**剪枝**--分区的思想
+![prunning](../images/ads-12.png)
+> - 极小化层发生了prunning,是因为在极大化的父决策中这一步的结果无关紧要；  
+> - 什么时候会“无关紧要”呢？也就是在极小化层的前面的值当中，存在比当前分叉已知值更大的值，这样无论后面的值什么，都不会影响极大化层的决策；  
+> - 由此我们可以抽象化地描述：假设已搜索的分区为P，max/min为P中的极值，x是当前搜索的分支节点：对于极小化层的搜索，如果x中存在比$P_{max}$要小的值，后续的搜索prunning;对于极大化层的搜索，如果x中存在比$P_{min}$要大的值，x分叉中后续的值均被剪枝.
+
+
+$\log{(n!)}$ = $O(n\cdot\log n)$  
+AVL的摊还时间复杂度：
+1. 插入：$O(\log n)$;
+2. 删除：$O(1)$;
+
+
+对于splay等BST的操作记住检查左小右大的合理性来 **加速** and **检验**！
+
+
+
+
+
+
+
+### 近似比的模型
+#### 列表调度
+- 将n个作业分配到m个相同的核上，目标是最小化最大核的负载，采用贪心算法：每次随机选择一个未分配的作业，分配到当前负载最小的核；
+- 近似比：2-$\frac{1}{m}$.
+
+
+
 
 <hr>
 
@@ -582,8 +692,8 @@ for (i = 0; i < NumPointsInStrip; i++)
 >大胆猜测，小心验证.
 
 如果出现类似于$T(\sqrt{N})$的形式：
-- 令$m = \log n$,则$T(\sqrt{N})$ = $T(2^{\frac{m}{2})$; $T(n) = T(2^m)$;
-- 再令$S(m)= T(2^m)$, $S(\frac{m}{2} = T(2^\frac{m}{2})$；
+- 令$m = \log n$,则$T(\sqrt{N})$ = $T(2^{\frac{m}{2}})$; $T(n) = T(2^m)$;
+- 再令$S(m)= T(2^m)$, $S(\frac{m}{2}) = T(2^\frac{m}{2})$；
 - 由此转化为了一般形式.
 
 
@@ -865,6 +975,7 @@ e.g.![alt text](../images/ads-10.png)
 - BF策略同样使用不超过 $\lfloor{1.7M} \rfloor$ 个`bin`；
 
 <hr>
+
 如果限定使用在线算法，其中 **最优** 的近似解法的最坏情况的近似比也为 $\frac{5}{3}$；
 
 #### First Fit Decreasing
@@ -1024,7 +1135,7 @@ ConfigType State_flipping()
 > 4. 输出稳定的配置S；
 
 
-***clain***: 上述的`state-flipping`算法在获得最终输出的过程中，**最多**执行$w_e$次状态翻转；
+***claim***: 上述的`state-flipping`算法在获得最终输出的过程中，**最多**执行$w_e$次状态翻转；
 - **proof**:
   - 每次翻转状态，一定伴随着好边 `k`值的增大以及坏边`k`值的减小(在全局范围内)，由于状态为正负一，因此等价于好边权值（绝对值）的增大；
   - 好边总权值的上界，就是无向图的权值和；
@@ -1225,7 +1336,12 @@ $
   - 根据期望的定义，E(x) = $\sum_{k=1}^\infty \frac{k}{2^k}$ = 2;
 
 
-$O(N\log N)$ 是上述算法的平均时间复杂度，而不是worst case.
+$O(N\log N)$ 是上述算法的平均时间复杂度，而不是worst case.  
+**Claim**: 
+- It runs in O(n logn)time in expectation even for the worst input.(注意此处说的是worst case的input,这恰恰是被随机化快排所解决的问题；而不是说选择的pivot是worst case的情况.)
+- 同时，随机化快排的时间复杂度不可能为O(n).
+
+
 > Type j.
 
 <hr>
@@ -1266,7 +1382,7 @@ for i = 1 pardo
 具体的赋值方法参见prodrafts.在此用语言抽象：
 - 每层的第一个节点，C = B ;
 - 每层偶数个节点，用父节点的C赋值；
-- 其余节点：父节点的C + 当前节点的B.
+- 其余节点：父节点左兄弟的C + 当前节点的B.
 
 ```c
 //自底向上构造B
@@ -1377,7 +1493,8 @@ T = 1, W = $O(N^2)$.
 用O(n)的processors可以获得：
 - T = O(1);
 - W = O(n);
-> 推导详见prodrafts.
+> 推导详见prodrafts.  
+> 没有在上述时间和空间约束下给出结果的概率为: $O(\frac{1}{n^c})$, c为某个常数.
 
 ## External Sorting
 ### Overview
